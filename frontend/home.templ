@@ -1,0 +1,188 @@
+package frontend
+
+type MediaCategory struct {
+	ID    string
+	Name  string
+	Icon  string
+	Accent string // Bootstrap color class suffix (e.g. "primary", "danger")
+}
+
+var mediaCategories = []MediaCategory{
+	{ID: "movies",  Name: "Movies",  Icon: "bi-film",           Accent: "danger"},
+	{ID: "videos",  Name: "Videos",  Icon: "bi-play-circle",    Accent: "primary"},
+	{ID: "music",   Name: "Music",   Icon: "bi-music-note-beamed", Accent: "success"},
+	{ID: "games",   Name: "Games",   Icon: "bi-controller",     Accent: "warning"},
+	{ID: "books",   Name: "Books",   Icon: "bi-book",           Accent: "info"},
+	{ID: "photos",  Name: "Photos",  Icon: "bi-image",          Accent: "secondary"},
+}
+
+templ Home() {
+	@base() {
+		<!-- Navbar -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow">
+			<div class="container-fluid px-4">
+				<a class="navbar-brand fw-bold fs-4" href="#">
+					<i class="bi bi-house-heart-fill text-primary me-2"></i>Homelab
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarContent">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						for _, cat := range mediaCategories {
+							<li class="nav-item">
+								<a class="nav-link" href={ templ.SafeURL("#" + cat.ID) }>
+									<i class={ "bi " + cat.Icon + " me-1" }></i>{ cat.Name }
+								</a>
+							</li>
+						}
+					</ul>
+					<form class="d-flex" role="search">
+						<div class="input-group">
+							<input class="form-control form-control-sm bg-secondary border-0 text-white" type="search" placeholder="Search media..." aria-label="Search"/>
+							<button class="btn btn-primary btn-sm" type="submit">
+								<i class="bi bi-search"></i>
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Hero -->
+		<div class="bg-dark text-white py-5 px-4 border-bottom border-secondary">
+			<div class="container-fluid">
+				<div class="row align-items-center">
+					<div class="col-lg-6">
+						<h1 class="display-5 fw-bold mb-2">
+							<i class="bi bi-collection-play-fill text-primary me-3"></i>Media Hub
+						</h1>
+						<p class="lead text-secondary mb-4">Your personal media library — all in one place.</p>
+						<div class="d-flex gap-2 flex-wrap">
+							for _, cat := range mediaCategories {
+								<a href={ templ.SafeURL("#" + cat.ID) } class={ "btn btn-outline-" + cat.Accent + " btn-sm" }>
+									<i class={ "bi " + cat.Icon + " me-1" }></i>{ cat.Name }
+								</a>
+							}
+						</div>
+					</div>
+					<div class="col-lg-6 d-none d-lg-flex justify-content-end gap-3 text-secondary fs-1 mt-4 mt-lg-0">
+						<i class="bi bi-film text-danger opacity-50"></i>
+						<i class="bi bi-music-note-beamed text-success opacity-50"></i>
+						<i class="bi bi-controller text-warning opacity-50"></i>
+						<i class="bi bi-book text-info opacity-50"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Media Sections -->
+		<div class="bg-dark min-vh-100 py-4 px-4">
+			<div class="container-fluid">
+				for _, cat := range mediaCategories {
+					@mediaCategorySection(cat)
+				}
+			</div>
+		</div>
+	}
+}
+
+templ mediaCategorySection(cat MediaCategory) {
+	<section id={ cat.ID } class="mb-5">
+		<!-- Section Header -->
+		<div class="d-flex align-items-center justify-content-between mb-3">
+			<h4 class="text-white mb-0 fw-semibold">
+				<i class={ "bi " + cat.Icon + " text-" + cat.Accent + " me-2" }></i>{ cat.Name }
+			</h4>
+			<a
+				href="#"
+				class={ "text-" + cat.Accent + " text-decoration-none small" }
+				hx-get={ "/media/" + cat.ID }
+				hx-target={ "#" + cat.ID + "-grid" }
+				hx-swap="outerHTML"
+			>
+				View all <i class="bi bi-chevron-right"></i>
+			</a>
+		</div>
+
+		<!-- Cards Row (loaded via HTMX on viewport enter) -->
+		<div
+			id={ cat.ID + "-grid" }
+			class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3"
+			hx-get={ "/media/" + cat.ID + "?limit=12" }
+			hx-trigger="intersect once"
+			hx-swap="innerHTML"
+			hx-indicator={ "#" + cat.ID + "-spinner" }
+		>
+			<!-- Skeleton placeholders shown before HTMX loads content -->
+			for range 6 {
+				@mediaCardSkeleton()
+			}
+		</div>
+		<div id={ cat.ID + "-spinner" } class="htmx-indicator text-center py-3">
+			<div class={ "spinner-border spinner-border-sm text-" + cat.Accent } role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+	</section>
+}
+
+templ mediaCardSkeleton() {
+	<div class="col">
+		<div class="card bg-secondary border-0 h-100 placeholder-glow">
+			<div class="card-img-top placeholder bg-secondary" style="height: 160px;"></div>
+			<div class="card-body p-2">
+				<p class="card-text placeholder col-8 mb-1"></p>
+				<p class="card-text placeholder col-5 small"></p>
+			</div>
+		</div>
+	</div>
+}
+
+templ MediaCard(id, title, subtitle, thumbnail, categoryAccent string) {
+	<div class="col">
+		<div
+			class="card bg-dark border border-secondary border-opacity-25 h-100 text-white media-card"
+			style="cursor: pointer; transition: transform .15s, border-color .15s;"
+			hx-get={ "/media/" + id }
+			hx-target="#media-detail-modal-body"
+			hx-swap="innerHTML"
+			data-bs-toggle="modal"
+			data-bs-target="#media-detail-modal"
+		>
+			if thumbnail != "" {
+				<img src={ thumbnail } class="card-img-top object-fit-cover" style="height: 160px;" alt={ title }/>
+			} else {
+				<div class={ "card-img-top d-flex align-items-center justify-content-center bg-secondary text-" + categoryAccent } style="height: 160px;">
+					<i class="bi bi-image fs-1 opacity-50"></i>
+				</div>
+			}
+			<div class="card-body p-2">
+				<p class="card-title fw-semibold mb-0 text-truncate small">{ title }</p>
+				if subtitle != "" {
+					<p class="card-text text-secondary mb-0" style="font-size: .75rem;">{ subtitle }</p>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ MediaDetailModal() {
+	<div class="modal fade" id="media-detail-modal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content bg-dark text-white border border-secondary">
+				<div class="modal-header border-secondary">
+					<h5 class="modal-title">Media Details</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="media-detail-modal-body">
+					<div class="text-center py-4">
+						<div class="spinner-border text-primary" role="status">
+							<span class="visually-hidden">Loading...</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
