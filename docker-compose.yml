@@ -1,0 +1,38 @@
+
+
+services:
+  homelab:
+    build: .
+    ports:
+      - 8080:8080
+    volumes:
+      - ./tmp:/app/tmp
+    environment:
+      - HOMELAB_DB_HOST=db
+      - HOMELAB_DB_PORT=5432
+      - HOMELAB_DB_USER=homelab
+      - HOMELAB_DB_PASSWORD=homelab
+      - HOMELAB_DB_NAME=homelab
+      - HOMELAB_DB_SSLMODE=disable
+      - HOMELAB_DB_SSLCERT=
+      - HOMELAB_DB_SSLKEY=
+      - HOMELAB_DB_SSLCA=
+      - HOMELAB_DB_SSLHOST=
+      - HOMELAB_LOG_LEVEL=debug
+      - HOMELAB_LOG_FORMAT=text
+      - HOMELAB_LOG_TIMEZONE=UTC
+      - HOMELAB_LOG_OUTPUT=stderr
+    depends_on:
+      - db
+  db:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=homelab
+      - POSTGRES_PASSWORD=homelab
+      - POSTGRES_DB=homelab
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
