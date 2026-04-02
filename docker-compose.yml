@@ -1,3 +1,7 @@
+secrets:
+  db_password:
+    file: ./sec/db_password
+
 services:
   homelab:
     build: .
