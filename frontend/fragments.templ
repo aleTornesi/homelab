@@ -1,0 +1,38 @@
+package frontend
+
+import (
+	"fmt"
+	"homelab/db"
+)
+
+templ MediaCardList(videos []db.Video, accent string) {
+	for _, v := range videos {
+		@MediaCard(
+			fmt.Sprintf("%d", v.ID),
+			v.Title,
+			v.UploadDate.Format("2006-01-02"),
+			"",
+			accent,
+		)
+	}
+}
+
+templ VideoDetail(video db.Video) {
+	<div class="row g-3">
+		<div class="col-12">
+			<h4 class="text-white mb-1">{ video.Title }</h4>
+			if video.Category.Valid {
+				<span class="badge bg-primary mb-2">{ video.Category.String }</span>
+			}
+			if video.Description != "" {
+				<p class="text-secondary mb-2">{ video.Description }</p>
+			}
+			<div class="text-secondary small mb-3">
+				<i class="bi bi-calendar me-1"></i>{ video.UploadDate.Format("January 2, 2006") }
+			</div>
+			<a href={ templ.SafeURL(video.Path) } class="btn btn-primary btn-sm">
+				<i class="bi bi-play-fill me-1"></i>Play
+			</a>
+		</div>
+	</div>
+}

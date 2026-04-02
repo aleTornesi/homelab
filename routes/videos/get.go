@@ -4,24 +4,14 @@ import (
 	"database/sql"
 	"fmt"
 	"homelab/db"
+	"homelab/frontend"
+	"homelab/secrets"
 	"net/http"
 	"os"
-
-	"homelab/secrets"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
-
-type Video struct {
-	ID          int32  `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Path        string `json:"path"`
-	UploadDate  string `json:"upload_date"`
-	UploadUser  int32  `json:"upload_user"`
-	Category    string `json:"category"`
-}
 
 func Get(c *gin.Context) {
 	limit := c.Query("limit")
@@ -69,20 +59,8 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	var encodableVideos []Video
-	for _, v := range videos {
-		encodableVideos = append(encodableVideos, Video{
-			ID:          v.ID,
-			Title:       v.Title,
-			Description: v.Description,
-			Path:        v.Path,
-			UploadDate:  v.UploadDate.Format("2006-01-02 15:04:05"),
-			UploadUser:  v.UploadUser.Int32,
-			Category:    v.Category.String,
-		})
-	}
-
-	c.JSON(http.StatusOK, videos)
+	c.Header("Content-Type", "text/html")
+	frontend.MediaCardList(videos, "primary").Render(c, c.Writer)
 }
 
 func GetById(c *gin.Context) {
@@ -117,5 +95,6 @@ func GetById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, video)
+	c.Header("Content-Type", "text/html")
+	frontend.VideoDetail(video).Render(c, c.Writer)
 }
