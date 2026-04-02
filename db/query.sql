@@ -9,7 +9,7 @@ FROM videos
 WHERE id >= $2
 LIMIT $1;
 
--- name: GetVidoById :one
+-- name: GetVideoById :one
 SELECT *
 FROM videos
 WHERE id = $1;

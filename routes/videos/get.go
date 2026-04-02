@@ -84,3 +84,38 @@ func Get(c *gin.Context) {
 
 	c.JSON(http.StatusOK, videos)
 }
+
+func GetById(c *gin.Context) {
+	id := c.Param("id")
+
+	conn, err := sql.Open(
+		"postgres", fmt.Sprintf(
+			"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+			os.Getenv("HOMELAB_DB_HOST"),
+			os.Getenv("HOMELAB_DB_PORT"),
+			os.Getenv("HOMELAB_DB_USER"),
+			secrets.GetDBPassword(),
+			os.Getenv("HOMELAB_DB_NAME"),
+			os.Getenv("HOMELAB_DB_SSLMODE"),
+		),
+	)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	defer conn.Close()
+
+	parsedId, err := strconv.Atoi(id)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	video, err := db.New(conn).GetVideoById(c, int32(parsedId))
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, video)
+}

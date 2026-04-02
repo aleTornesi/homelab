@@ -211,6 +211,27 @@ func (q *Queries) GetSongsFromId(ctx context.Context, arg GetSongsFromIdParams) 
 	return items, nil
 }
 
+const getVideoById = `-- name: GetVideoById :one
+SELECT id, title, description, path, upload_date, upload_user, category
+FROM videos
+WHERE id = $1
+`
+
+func (q *Queries) GetVideoById(ctx context.Context, id int32) (Video, error) {
+	row := q.db.QueryRowContext(ctx, getVideoById, id)
+	var i Video
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Path,
+		&i.UploadDate,
+		&i.UploadUser,
+		&i.Category,
+	)
+	return i, err
+}
+
 const getVideos = `-- name: GetVideos :many
 SELECT id, title, description, path, upload_date, upload_user, category
 FROM videos
@@ -289,25 +310,4 @@ func (q *Queries) GetVideosFromId(ctx context.Context, arg GetVideosFromIdParams
 		return nil, err
 	}
 	return items, nil
-}
-
-const getVidoById = `-- name: GetVidoById :one
-SELECT id, title, description, path, upload_date, upload_user, category
-FROM videos
-WHERE id = $1
-`
-
-func (q *Queries) GetVidoById(ctx context.Context, id int32) (Video, error) {
-	row := q.db.QueryRowContext(ctx, getVidoById, id)
-	var i Video
-	err := row.Scan(
-		&i.ID,
-		&i.Title,
-		&i.Description,
-		&i.Path,
-		&i.UploadDate,
-		&i.UploadUser,
-		&i.Category,
-	)
-	return i, err
 }
