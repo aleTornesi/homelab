@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username TEXT NOT NULL,
-    password BYTEA NOT NULL,
+    password BYTEA NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS videos (
