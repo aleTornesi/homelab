@@ -26,6 +26,13 @@ services:
       - HOMELAB_LOG_OUTPUT=stderr
     depends_on:
       - db
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+          ignore:
+            - tmp/
+            - .git/
   db:
     image: postgres:13-alpine
     ports:
@@ -35,7 +42,7 @@ services:
       - POSTGRES_PASSWORD=homelab
       - POSTGRES_DB=homelab
     volumes:
-      - ./tmp/db:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./db/schema.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
