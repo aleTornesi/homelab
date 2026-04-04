@@ -24,6 +24,8 @@ services:
       - HOMELAB_LOG_FORMAT=text
       - HOMELAB_LOG_TIMEZONE=UTC
       - HOMELAB_LOG_OUTPUT=stderr
+    secrets:
+      - db_password
     depends_on:
       - db
     develop:

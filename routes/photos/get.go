@@ -1,4 +1,4 @@
-package videos
+package photos
 
 import (
 	"database/sql"
@@ -45,14 +45,14 @@ func Get(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	var videos []db.Video
+	var photos []db.Photo
 	if limit != "" && offset != "" {
-		videos, err = db.New(conn).GetVideosFromId(c, db.GetVideosFromIdParams{
+		photos, err = db.New(conn).GetPhotosFromId(c, db.GetPhotosFromIdParams{
 			Limit: int32(parsedLimit),
 			ID:    int32(parsedOffset),
 		})
 	} else {
-		videos, err = db.New(conn).GetVideos(c, int32(parsedLimit))
+		photos, err = db.New(conn).GetPhotos(c, int32(parsedLimit))
 	}
 
 	if err != nil {
@@ -61,14 +61,14 @@ func Get(c *gin.Context) {
 	}
 
 	mediaCardData := []frontend.MediaCardData{}
-	for _, v := range videos {
+	for _, v := range photos {
 		mediaCardData = append(mediaCardData, frontend.MediaCardData{
 			ID:          v.ID,
 			Title:       v.Title,
 			Date:        v.UploadDate,
 			Description: v.Description,
-			Accent:      "primary",
-			Category:    "videos",
+			Accent:      "secondary",
+			Category:    "photos",
 		})
 	}
 	c.Header("Content-Type", "text/html")
@@ -101,12 +101,12 @@ func GetById(c *gin.Context) {
 		return
 	}
 
-	video, err := db.New(conn).GetVideoById(c, int32(parsedId))
+	photo, err := db.New(conn).GetPhotoById(c, int32(parsedId))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	c.Header("Content-Type", "text/html")
-	frontend.VideoDetail(video).Render(c, c.Writer)
+	frontend.PhotoDetail(photo).Render(c, c.Writer)
 }

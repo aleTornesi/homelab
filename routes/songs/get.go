@@ -1,4 +1,4 @@
-package videos
+package songs
 
 import (
 	"database/sql"
@@ -45,14 +45,14 @@ func Get(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	var videos []db.Video
+	var videos []db.Song
 	if limit != "" && offset != "" {
-		videos, err = db.New(conn).GetVideosFromId(c, db.GetVideosFromIdParams{
+		videos, err = db.New(conn).GetSongsFromId(c, db.GetSongsFromIdParams{
 			Limit: int32(parsedLimit),
 			ID:    int32(parsedOffset),
 		})
 	} else {
-		videos, err = db.New(conn).GetVideos(c, int32(parsedLimit))
+		videos, err = db.New(conn).GetSongs(c, int32(parsedLimit))
 	}
 
 	if err != nil {
@@ -68,7 +68,7 @@ func Get(c *gin.Context) {
 			Date:        v.UploadDate,
 			Description: v.Description,
 			Accent:      "primary",
-			Category:    "videos",
+			Category:    "songs",
 		})
 	}
 	c.Header("Content-Type", "text/html")
@@ -101,12 +101,12 @@ func GetById(c *gin.Context) {
 		return
 	}
 
-	video, err := db.New(conn).GetVideoById(c, int32(parsedId))
+	song, err := db.New(conn).GetSongById(c, int32(parsedId))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	c.Header("Content-Type", "text/html")
-	frontend.VideoDetail(video).Render(c, c.Writer)
+	frontend.SongDetail(song).Render(c, c.Writer)
 }

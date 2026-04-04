@@ -10,7 +10,7 @@ type MediaCategory struct {
 var mediaCategories = []MediaCategory{
 	{ID: "movies",  Name: "Movies",  Icon: "bi-film",           Accent: "danger"},
 	{ID: "videos",  Name: "Videos",  Icon: "bi-play-circle",    Accent: "primary"},
-	{ID: "music",   Name: "Music",   Icon: "bi-music-note-beamed", Accent: "success"},
+	{ID: "songs",   Name: "Music",   Icon: "bi-music-note-beamed", Accent: "success"},
 	{ID: "games",   Name: "Games",   Icon: "bi-controller",     Accent: "warning"},
 	{ID: "books",   Name: "Books",   Icon: "bi-book",           Accent: "info"},
 	{ID: "photos",  Name: "Photos",  Icon: "bi-image",          Accent: "secondary"},
@@ -139,12 +139,12 @@ templ mediaCardSkeleton() {
 	</div>
 }
 
-templ MediaCard(id, title, subtitle, thumbnail, categoryAccent string) {
+templ MediaCard(id, title, subtitle, thumbnail, categoryAccent, category string) {
 	<div class="col">
 		<div
 			class="card bg-dark border border-secondary border-opacity-25 h-100 text-white media-card"
 			style="cursor: pointer; transition: transform .15s, border-color .15s;"
-			hx-get={ "/media/" + id }
+			hx-get={ "/media/" + category + "/" + id }
 			hx-target="#media-detail-modal-body"
 			hx-swap="innerHTML"
 			data-bs-toggle="modal"

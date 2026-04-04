@@ -2,6 +2,9 @@ package main
 
 import (
 	"homelab/frontend"
+
+	"homelab/routes/photos"
+	"homelab/routes/songs"
 	"homelab/routes/videos"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +19,13 @@ func main() {
 	})
 
 	r.GET("/media/videos", videos.Get)
-	r.GET("/media/:id", videos.GetById)
+	r.GET("/media/videos/:id", videos.GetById)
+
+	r.GET("/media/photos", photos.Get)
+	r.GET("/media/photos/:id", photos.GetById)
+
+	r.GET("/media/songs", songs.Get)
+	r.GET("/media/songs/:id", songs.GetById)
 
 	r.Run(":8080")
 }

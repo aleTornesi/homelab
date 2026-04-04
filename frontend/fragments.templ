@@ -3,18 +3,69 @@ package frontend
 import (
 	"fmt"
 	"homelab/db"
+    "time"
 )
 
-templ MediaCardList(videos []db.Video, accent string) {
+type MediaCardData struct {
+	ID          int32
+	Title       string
+	Date        time.Time
+	Description string
+	Accent      string
+	Category    string
+}
+
+templ MediaCardList(videos []MediaCardData, accent string) {
 	for _, v := range videos {
 		@MediaCard(
 			fmt.Sprintf("%d", v.ID),
 			v.Title,
-			v.UploadDate.Format("2006-01-02"),
-			"",
+			v.Date.Format("02-01-2006"),
+			v.Description,
 			accent,
+			v.Category,
 		)
 	}
+}
+
+templ PhotoDetail(photo db.Photo) {
+	<div class="row g-3">
+		<div class="col-12">
+			<h4 class="text-white mb-1">{ photo.Title }</h4>
+			if photo.Category.Valid {
+				<span class="badge bg-success mb-2">{ photo.Category.String }</span>
+			}
+			if photo.Description != "" {
+				<p class="text-secondary mb-2">{ photo.Description }</p>
+			}
+			<div class="text-secondary small mb-3">
+				<i class="bi bi-calendar me-1"></i>{ photo.UploadDate.Format("January 2, 2006") }
+			</div>
+			<a href={ templ.SafeURL(photo.Path) } class="btn btn-success btn-sm">
+				<i class="bi bi-image me-1"></i>View
+			</a>
+		</div>
+	</div>
+}
+
+templ SongDetail(song db.Song) {
+	<div class="row g-3">
+		<div class="col-12">
+			<h4 class="text-white mb-1">{ song.Title }</h4>
+			if song.Category.Valid {
+				<span class="badge bg-warning mb-2">{ song.Category.String }</span>
+			}
+			if song.Description != "" {
+				<p class="text-secondary mb-2">{ song.Description }</p>
+			}
+			<div class="text-secondary small mb-3">
+				<i class="bi bi-calendar me-1"></i>{ song.UploadDate.Format("January 2, 2006") }
+			</div>
+			<a href={ templ.SafeURL(song.Path) } class="btn btn-warning btn-sm">
+				<i class="bi bi-music-note me-1"></i>Play
+			</a>
+		</div>
+	</div>
 }
 
 templ VideoDetail(video db.Video) {

@@ -18,7 +18,7 @@ type MediaCategory struct {
 var mediaCategories = []MediaCategory{
 	{ID: "movies", Name: "Movies", Icon: "bi-film", Accent: "danger"},
 	{ID: "videos", Name: "Videos", Icon: "bi-play-circle", Accent: "primary"},
-	{ID: "music", Name: "Music", Icon: "bi-music-note-beamed", Accent: "success"},
+	{ID: "songs", Name: "Music", Icon: "bi-music-note-beamed", Accent: "success"},
 	{ID: "games", Name: "Games", Icon: "bi-controller", Accent: "warning"},
 	{ID: "books", Name: "Books", Icon: "bi-book", Accent: "info"},
 	{ID: "photos", Name: "Photos", Icon: "bi-image", Accent: "secondary"},
@@ -453,7 +453,7 @@ func mediaCardSkeleton() templ.Component {
 	})
 }
 
-func MediaCard(id, title, subtitle, thumbnail, categoryAccent string) templ.Component {
+func MediaCard(id, title, subtitle, thumbnail, categoryAccent, category string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -479,9 +479,9 @@ func MediaCard(id, title, subtitle, thumbnail, categoryAccent string) templ.Comp
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var30 string
-		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs("/media/" + id)
+		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs("/media/" + category + "/" + id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `frontend/home.templ`, Line: 147, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `frontend/home.templ`, Line: 147, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
