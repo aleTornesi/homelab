@@ -9,6 +9,7 @@ services:
       - 8080:8080
     volumes:
       - ./tmp:/app/tmp
+      - /mnt:/mnt
     environment:
       - HOMELAB_DB_HOST=db
       - HOMELAB_DB_PORT=5432

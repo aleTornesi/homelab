@@ -21,7 +21,7 @@ templ MediaCardList(videos []MediaCardData, accent string) {
 			fmt.Sprintf("%d", v.ID),
 			v.Title,
 			v.Date.Format("02-01-2006"),
-			v.Description,
+			"/media/" + v.Category + "/" + fmt.Sprintf("%d", v.ID) + "/view",
 			accent,
 			v.Category,
 		)
